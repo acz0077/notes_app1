@@ -10,64 +10,60 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
-  final noteController = TextEditingController();
+  // notes db
   final notesDatabase = NotesDatabase();
+
+  // text controller
+  final noteController = TextEditingController();
+
+  // user wants to add new note
+  void addNewNote() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(),
+      title: const Text("New Note"),
+      content: TextField(controller: noteController),
+      actions: [
+        // cancel button
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            noteController.clear();
+          },
+          child: const Text("Cancel"),
+        ),
+        // save button
+        TextButton(
+          onPressed: () {
+            // create a new  note
+            final newNote = Note(content: noteController.text);
+            // save in db
+            notesDatabase.createNote(newNote);
+
+            Navigator.pop(context);
+            noteController.clear();
+          },
+          child: const Text("Save"),
+        ),
+      ],
+    );
+  }
+
+  // user wants to update note
+
+  // user wants to delete note
+
+  // BUILD UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // App Bar
+      appBar: AppBar(title: const Text("Notes")),
+
+      // Button
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder:
-                (context) => AlertDialog(
-                  title: const Text('New Note'),
-                  content: TextField(controller: noteController),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        // popthe page
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // get newNote
-                        final newNote = Note(content: noteController.text);
-
-                        //save note
-                        notesDatabase.createNote(newNote);
-
-                        //pop the page
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Save'),
-                    ),
-                  ],
-                ),
-          );
-        },
+        onPressed: () {},
         child: const Icon(Icons.add),
-      ),
-      appBar: AppBar(title: const Text('Notes'), centerTitle: true),
-      body: StreamBuilder(
-        stream: notesDatabase.stream,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            // loading....
-            return const Center(child: CircularProgressIndicator());
-          }
-          // if there is data => return list view of notes
-          final notes = snapshot.data!;
-          return ListView.builder(
-            itemCount: notes.length,
-            itemBuilder: (context, index) {
-              final note = notes[index];
-              return ListTile(title: Text(note.content));
-            },
-          );
-        },
       ),
     );
   }
