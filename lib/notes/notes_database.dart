@@ -25,4 +25,6 @@ class NotesDatabase {
   Future deleteNote(Note note) async {
     await database.delete().eq('id', note.id!);
   }
+
+  void addNote(String text) {}
 }
